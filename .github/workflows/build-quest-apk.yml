@@ -1,0 +1,45 @@
+name: Build Quest External Camera APK
+
+on:
+  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install NDK and CMake
+      run: |
+        sdkmanager --install "ndk;25.1.8937393" "cmake;3.22.1"
+
+    - name: Build Ocean Thirdparty Dependencies
+      run: |
+        # Скрипт сборки зависимостей под Android, предусмотренный разработчиками Ocean
+        cd thirdparty
+        # Примечание: тут вызывается скрипт сборки из репозитория, например:
+        # ./build_android.sh
+        cd ..
+
+    - name: Build APK with Gradle
+      run: |
+        cd build/gradle/application/ocean/demo/media/externalcamera/android
+        chmod +x gradlew
+        ./gradlew assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/actions-artifact@v4
+      with:
+        name: quest-external-camera-apk
+        path: build/gradle/application/ocean/demo/media/externalcamera/android/app/build/outputs/apk/debug/app-debug.apk
