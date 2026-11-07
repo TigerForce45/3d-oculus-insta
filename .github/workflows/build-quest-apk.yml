@@ -8,13 +8,14 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Явно фиксируем стабильную ОС, где гарантированно развернуты все SDK
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout repository with submodules
       uses: actions/checkout@v4
       with:
-        submodules: 'recursive' # Подтягивает скрытые зависимости C++
+        submodules: 'recursive'
 
     - name: Set up JDK 17
       uses: actions/setup-java@v5
@@ -29,11 +30,16 @@ jobs:
       run: |
         sdkmanager --install "ndk;25.1.8937393" "cmake;3.22.1"
 
+    - name: Configure Environment Variables
+      run: |
+        echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/25.1.8937393" >> $GITHUB_ENV
+        echo "OCEAN_THIRDPARTY_PATH=$GITHUB_WORKSPACE/thirdparty/install" >> $GITHUB_ENV
+
     - name: Build APK with Gradle
       run: |
         cd build/gradle/application/ocean/demo/media/externalcamera/android
         chmod +x gradlew
-        ./gradlew assembleDebug --stacktrace --info
+        ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       if: success()
