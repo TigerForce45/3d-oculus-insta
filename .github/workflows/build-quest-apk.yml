@@ -1,7 +1,7 @@
 name: Build Quest External Camera APK
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,13 +12,13 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
 
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
 
     - name: Install NDK and CMake
       run: |
@@ -26,10 +26,8 @@ jobs:
 
     - name: Build Ocean Thirdparty Dependencies
       run: |
-        # Скрипт сборки зависимостей под Android, предусмотренный разработчиками Ocean
         cd thirdparty
-        # Примечание: тут вызывается скрипт сборки из репозитория, например:
-        # ./build_android.sh
+        # Если здесь происходит ошибка, нужно проверить точное имя скрипта сборки в папке thirdparty
         cd ..
 
     - name: Build APK with Gradle
