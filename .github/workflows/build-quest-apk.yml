@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout repository with submodules
       uses: actions/checkout@v4
+      with:
+        submodules: 'recursive' # Подтягивает скрытые зависимости C++
 
     - name: Set up JDK 17
       uses: actions/setup-java@v5
@@ -31,11 +33,10 @@ jobs:
       run: |
         cd build/gradle/application/ocean/demo/media/externalcamera/android
         chmod +x gradlew
-        # Флаг --stacktrace покажет полную ошибку, если сборка упадет здесь
-        ./gradlew assembleDebug --stacktrace
+        ./gradlew assembleDebug --stacktrace --info
 
     - name: Upload APK Artifact
-      if: success() # Выполнять только если компиляция прошла успешно
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: quest-external-camera-apk
