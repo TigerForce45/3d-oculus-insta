@@ -39,7 +39,7 @@ jobs:
         ./gradlew assembleDebug
 
     - name: Upload APK Artifact
-      uses: actions/actions-artifact@v4
+      uses: actions/upload-artifact@v4
       with:
         name: quest-external-camera-apk
         path: build/gradle/application/ocean/demo/media/externalcamera/android/app/build/outputs/apk/debug/app-debug.apk
