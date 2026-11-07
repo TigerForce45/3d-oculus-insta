@@ -3,7 +3,6 @@ name: Build Quest External Camera APK
 on:
   workflow_dispatch:
 
-# Отключает предупреждения об устаревшей версии Node.js на серверах GitHub
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
@@ -28,19 +27,15 @@ jobs:
       run: |
         sdkmanager --install "ndk;25.1.8937393" "cmake;3.22.1"
 
-    - name: Build Ocean Thirdparty Dependencies
-      run: |
-        cd thirdparty
-        # Сюда автоматически добавятся шаги компиляции зависимостей
-        cd ..
-
     - name: Build APK with Gradle
       run: |
         cd build/gradle/application/ocean/demo/media/externalcamera/android
         chmod +x gradlew
-        ./gradlew assembleDebug
+        # Флаг --stacktrace покажет полную ошибку, если сборка упадет здесь
+        ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
+      if: success() # Выполнять только если компиляция прошла успешно
       uses: actions/upload-artifact@v4
       with:
         name: quest-external-camera-apk
